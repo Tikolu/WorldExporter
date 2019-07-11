@@ -1,17 +1,16 @@
 @ECHO OFF
 
 :: Minecraft PE Internal World Exporter
-:: Version 2.0
+:: Version 2.1
 ::
 :: Created by Tikolu - http://tikolu.net16.net/worldExporter
 :: Report issues to tikolu43@gmail.com
 
 :SETUP
-TITLE MCPE Internal World Exporter tool by Tikolu - Version 2.0
+TITLE MCPE Internal World Exporter tool by Tikolu - Version 2.1
 COLOR 0f
 SET heading=Internal World Exporter by Tikolu
 SET divider==================================
-SET skipcheck=False
 SET email=tikolu43@gmail.com
 IF NOT EXIST files\temp GOTO FILEERROR
 CD files
@@ -32,7 +31,7 @@ GOTO INTRODUCTION
 CLS
 ECHO An error was encountered when trying to access the files folder.
 ECHO If you downloaded this as a ZIP file, make sure that it is extracted.
-ECHO Email: %email%
+ECHO If you need help, please contact %email%
 ECHO.
 ECHO Press enter to exit.
 PAUSE>NUL
@@ -41,8 +40,8 @@ EXIT
 :JAVANOTINSTALLED
 CLS
 ECHO Java was not detected on your system.
-ECHO Please install Java and try again.
-ECHO Email: %email%
+ECHO Please make sure Java is installed.
+ECHO If you need help, please contact %email%
 ECHO.
 ECHO Press enter to exit.
 PAUSE>NUL
@@ -61,16 +60,10 @@ GOTO SETUP
 :MINECRAFTNOTINSTALLED
 CLS
 ECHO Minecraft was not detected on your device.
-ECHO Email: %email%
 ECHO.
-ECHO This might be caused by an ADB error.
-ECHO.
-ECHO Please note, on certain devices Minecraft's installation might not be detected properly.
-ECHO If you are sure that Minecraft is installed, press enter and extraction will proceed.
-ECHO However, more errors may await..
-SET skipcheck=True
+ECHO If Minecraft is installed, this means that there is an error communicating with
+ECHO your device. Please contact my email, %email%
 PAUSE>NUL
-GOTO BACKUP
 EXIT
 
 :BACKUPERROR
@@ -87,7 +80,7 @@ EXIT
 CLS
 ECHO The backup has been exported succesfully but the minecraftWorlds folder could not be found.
 ECHO Are you sure that you have set your storage type to "Application" in Minecraft settings?
-ECHO Email: %email%
+ECHO If you need help, please contact %email%
 ECHO.
 ECHO Press enter to exit.
 PAUSE>NUL
@@ -153,9 +146,7 @@ GOTO BACKUP
 :BACKUP
 adb0 shell pm path com.mojang.minecraftpe>temp
 SET /p minecraftPath=<temp
-IF [%skipcheck%.%minecraftPath%]==[False.] (
-	GOTO MINECRAFTNOTINSTALLED
-)
+IF [%minecraftPath%]==[] GOTO MINECRAFTNOTINSTALLED
 CLS
 ECHO %heading%
 ECHO %divider%
@@ -176,21 +167,17 @@ SET /p backupSize=<temp
 IF [%backupSize%]==[0] GOTO BACKUPERROR
 IF EXIST "backup" RMDIR backup /s /q
 MKDIR backup
-ECHO Backup directory cleared and ready for new backup.
 ECHO Extracting backup file...
 IF NOT EXIST "backup.ab" GOTO BACKUPERROR
 java -jar abe.jar unpack backup.ab backup.tar
 IF NOT EXIST "backup.tar" GOTO BACKUPERROR
-ECHO Backup file extracted.
 ECHO Extracting archive...
 7zip x -y -obackup backup.tar>NUL
-ECHO Archive extraction completed.
 ECHO Moving "minecraftWorlds" folder to desktop...
 IF NOT EXIST "backup\apps\com.mojang.minecraftpe\r\games\com.mojang" GOTO EMPTYBACKUP
 CD backup\apps\com.mojang.minecraftpe\r\games\com.mojang
 IF EXIST "%USERPROFILE%\Desktop\minecraftWorlds" GOTO WORLDFOLDEREXISTS
 MOVE "minecraftWorlds" "%USERPROFILE%\Desktop">NUL
-ECHO Folder moved.
 ECHO Cleaning up...
 CD "..\..\..\..\..\.."
 RMDIR backup /s /q
