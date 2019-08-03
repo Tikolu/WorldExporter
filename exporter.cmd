@@ -1,4 +1,5 @@
 @ECHO OFF
+CD %~dp0
 
 :: Minecraft PE Internal World Exporter
 :: Version 2.1
