@@ -2,13 +2,13 @@
 CD %~dp0
 
 :: Minecraft PE Internal World Exporter
-:: Version 2.1
+:: Version 2.3
 ::
 :: Created by Tikolu - http://tikolu.net16.net/worldExporter
 :: Report issues to tikolu43@gmail.com
 
 :SETUP
-TITLE MCPE Internal World Exporter tool by Tikolu - Version 2.1
+TITLE MCPE Internal World Exporter tool by Tikolu - Version 2.3
 COLOR 0f
 SET heading=Internal World Exporter by Tikolu
 SET divider==================================
@@ -18,11 +18,15 @@ CD files
 ECHO test>temp
 SET /p test=<temp
 IF NOT [%test%]==[test] GOTO FILEERROR
-where java >nul 2>nul
-if %errorlevel%==1 GOTO JAVANOTINSTALLED
+ECHO test>%USERPROFILE%\Desktop\worldexportertemp
+SET /p test=<%USERPROFILE%\Desktop\worldexportertemp
+IF NOT [%test%]==[test] GOTO DESKTOPERROR
+WHERE java >nul 2>nul
+IF %errorlevel%==1 GOTO JAVANOTINSTALLED
 IF EXIST "%USERPROFILE%\Desktop\minecraftWorlds" GOTO WORLDFOLDEREXISTS
 ECHO Launching ADB...
-ECHO If the program closes, please open it again.
+adb0 start-server>nul
+ECHO Getting device state...
 adb0 get-state>temp
 SET /p deviceState=<temp
 IF [%deviceState%]==[device] GOTO BACKUP
@@ -31,7 +35,17 @@ GOTO INTRODUCTION
 :FILEERROR
 CLS
 ECHO An error was encountered when trying to access the files folder.
-ECHO If you downloaded this as a ZIP file, make sure that it is extracted.
+ECHO Please make sure that the ZIP file is extracted before using World Exporter.
+ECHO If you need help, please contact %email%
+ECHO.
+ECHO Press enter to exit.
+PAUSE>NUL
+EXIT
+
+:DESKTOPERROR
+CLS
+ECHO An error was encountered when trying to save files to the desktop.
+ECHO Try running World Exporter as administrator.
 ECHO If you need help, please contact %email%
 ECHO.
 ECHO Press enter to exit.
@@ -184,6 +198,7 @@ CD "..\..\..\..\..\.."
 RMDIR backup /s /q
 IF EXIST "backup.ab" DEL backup.ab
 IF EXIST "backup.tar" DEL backup.tar
+adb0 kill-server>nul
 ECHO World Export Complete!
 EXPLORER %USERPROFILE%\Desktop\minecraftWorlds
 TIMEOUT /T 2 >NUL
