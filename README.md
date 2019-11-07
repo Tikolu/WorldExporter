@@ -1,1 +1,1 @@
-Documentaion can be found at http://tikolu.net16.net/worldexporter
+Documentaion can be found at https://tikolu.net/worldExporter
