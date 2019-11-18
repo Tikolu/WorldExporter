@@ -1,14 +1,15 @@
+:: Minecraft PE Internal World Exporter
+:: Version 2.4
+::
+:: Created by Tikolu - https://tikolu.net/worldExporter
+:: Report issues to tikolu43@gmail.com
+
+
 @ECHO OFF
 CD %~dp0
 
-:: Minecraft PE Internal World Exporter
-:: Version 2.3
-::
-:: Created by Tikolu - http://tikolu.net16.net/worldExporter
-:: Report issues to tikolu43@gmail.com
-
 :SETUP
-TITLE MCPE Internal World Exporter tool by Tikolu - Version 2.3
+TITLE MCPE Internal World Exporter tool by Tikolu - Version 2.4
 COLOR 0f
 SET heading=Internal World Exporter by Tikolu
 SET divider==================================
@@ -110,7 +111,7 @@ ECHO You can use this tool to export worlds from Minecraft Pocket Edition if you
 ECHO your storage type to "Application" in the settings.
 ECHO.
 ECHO This program was created by Tikolu. If you experience any problems during the
-ECHO process, please contact me at %email%. Documentation: tikolu.net16.net/worldExporter
+ECHO process, please contact me at %email%. Documentation: tikolu.net/worldExporter
 ECHO.
 ECHO Whenever you're ready, press enter.
 PAUSE>NUL
@@ -189,6 +190,7 @@ IF NOT EXIST "backup.tar" GOTO BACKUPERROR
 ECHO Extracting archive...
 7zip x -y -obackup backup.tar>NUL
 ECHO Moving "minecraftWorlds" folder to desktop...
+:: 3 Billion Devices run Tikolu World Exporter
 IF NOT EXIST "backup\apps\com.mojang.minecraftpe\r\games\com.mojang" GOTO EMPTYBACKUP
 CD backup\apps\com.mojang.minecraftpe\r\games\com.mojang
 IF EXIST "%USERPROFILE%\Desktop\minecraftWorlds" GOTO WORLDFOLDEREXISTS
@@ -216,13 +218,17 @@ ECHO Thank you for using my tool. If it helped you today, please let me know by
 ECHO emailing %email%! If you experienced any issues, errors or if
 ECHO you just have a general suggestion about the program, also let me know!
 ECHO.
-ECHO Credits, changelog and more information can be found on my website:
-ECHO http://tikolu.net16.net/worldExporter
+ECHO WorldExporter is (and always will be) a free to use project.
+ECHO However, you can support future development of WorldExporter
+ECHO by donating. Any amount will be greatly appreciated!
+ECHO.
+ECHO Information on how to donate, as well as credits, changelog,
+ECHO and other information can be found on my website:
+ECHO https://tikolu.net/worldExporter
 ECHO.
 ECHO Press enter to exit.
 PAUSE>NUL
 EXIT
-
 
 
 GOTO SETUP
