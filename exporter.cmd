@@ -1,16 +1,15 @@
 :: Minecraft PE Internal World Exporter
-:: Version 2.4
+:: Version 2.5
 ::
 :: Created by Tikolu - https://tikolu.net/worldExporter
 :: Report issues to tikolu43@gmail.com
 
 
-@ECHO OFF
-CD %~dp0
-
 :SETUP
-TITLE MCPE Internal World Exporter tool by Tikolu - Version 2.4
+@ECHO OFF
+TITLE MCPE Internal World Exporter tool by Tikolu - Version 2.5
 COLOR 0f
+CD %~dp0
 SET heading=Internal World Exporter by Tikolu
 SET divider==================================
 SET email=tikolu43@gmail.com
@@ -19,12 +18,10 @@ CD files
 ECHO test>temp
 SET /p test=<temp
 IF NOT [%test%]==[test] GOTO FILEERROR
-ECHO test>%USERPROFILE%\Desktop\worldexportertemp
-SET /p test=<%USERPROFILE%\Desktop\worldexportertemp
-IF NOT [%test%]==[test] GOTO DESKTOPERROR
 WHERE java >nul 2>nul
 IF %errorlevel%==1 GOTO JAVANOTINSTALLED
-IF EXIST "%USERPROFILE%\Desktop\minecraftWorlds" GOTO WORLDFOLDEREXISTS
+IF EXIST "..\minecraftWorlds" GOTO WORLDFOLDEREXISTS
+CLS
 ECHO Launching ADB...
 adb0 start-server>nul
 ECHO Getting device state...
@@ -43,16 +40,6 @@ ECHO Press enter to exit.
 PAUSE>NUL
 EXIT
 
-:DESKTOPERROR
-CLS
-ECHO An error was encountered when trying to save files to the desktop.
-ECHO Try running World Exporter as administrator.
-ECHO If you need help, please contact %email%
-ECHO.
-ECHO Press enter to exit.
-PAUSE>NUL
-EXIT
-
 :JAVANOTINSTALLED
 CLS
 ECHO Java was not detected on your system.
@@ -65,12 +52,11 @@ EXIT
 
 :WORLDFOLDEREXISTS
 CLS
-ECHO The "minecraftWorlds" folder on your Desktop must be deleted (or renamed) before exporting new worlds.
+ECHO The "minecraftWorlds" folder inside WorldExporter's directory must be deleted (or renamed) before exporting new worlds.
 ECHO.
 ECHO Press enter to delete the folder and continue.
 PAUSE>NUL
-RMDIR %USERPROFILE%\Desktop\minecraftWorlds
-CD ..
+RMDIR "%~dp0\minecraftWorlds" /s /q
 GOTO SETUP
 
 :MINECRAFTNOTINSTALLED
@@ -134,7 +120,7 @@ ECHO Press enter whenever you're ready to install the drivers.
 PAUSE>NUL
 CD driver
 CALL installer install
-CD..
+CD ..
 ECHO Press enter if the drivers were succesfully installed.
 PAUSE>NUL
 GOTO DEBUGGING
@@ -189,12 +175,12 @@ java -jar abe.jar unpack backup.ab backup.tar
 IF NOT EXIST "backup.tar" GOTO BACKUPERROR
 ECHO Extracting archive...
 7zip x -y -obackup backup.tar>NUL
-ECHO Moving "minecraftWorlds" folder to desktop...
+ECHO Moving "minecraftWorlds" folder to WorldExporter directory...
 :: 3 Billion Devices run Tikolu World Exporter
 IF NOT EXIST "backup\apps\com.mojang.minecraftpe\r\games\com.mojang" GOTO EMPTYBACKUP
 CD backup\apps\com.mojang.minecraftpe\r\games\com.mojang
-IF EXIST "%USERPROFILE%\Desktop\minecraftWorlds" GOTO WORLDFOLDEREXISTS
-MOVE "minecraftWorlds" "%USERPROFILE%\Desktop">NUL
+IF EXIST "%~dp0\minecraftWorlds" GOTO WORLDFOLDEREXISTS
+MOVE "minecraftWorlds" "%~dp0">NUL
 ECHO Cleaning up...
 CD "..\..\..\..\..\.."
 RMDIR backup /s /q
@@ -202,8 +188,8 @@ IF EXIST "backup.ab" DEL backup.ab
 IF EXIST "backup.tar" DEL backup.tar
 adb0 kill-server>nul
 ECHO World Export Complete!
-EXPLORER %USERPROFILE%\Desktop\minecraftWorlds
 TIMEOUT /T 2 >NUL
+START %~dp0\minecraftWorlds
 GOTO END
 
 :END
@@ -212,7 +198,7 @@ ECHO %heading%
 ECHO %divider%
 ECHO.
 ECHO The worlds have been exported!
-ECHO You should now find a "minecraftWorlds" folder on your desktop.
+ECHO You should now find a "minecraftWorlds" folder in the WorldExporter directory.
 ECHO.
 ECHO Thank you for using my tool. If it helped you today, please let me know by
 ECHO emailing %email%! If you experienced any issues, errors or if
@@ -229,6 +215,3 @@ ECHO.
 ECHO Press enter to exit.
 PAUSE>NUL
 EXIT
-
-
-GOTO SETUP
