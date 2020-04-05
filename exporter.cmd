@@ -139,9 +139,9 @@ ECHO 4. Go out of "About Device" and back into "System". A new "Developer Option
 ECHO 5. Open it and scroll down to "USB DEBUGGING". Make sure that it is ENABLED.
 ECHO.
 ECHO 6. Connect the device to your computer with a USB cable.
-ECHO 7. After connecting a popup will ask "Allow USB Debugging?". Tap on "Ok".
+ECHO 7. After connecting a popup will ask "Allow USB Debugging?". Tap on "Allow".
 ECHO.
-ECHO The World Extraction will start as soon as you Tap "Ok" on your device.
+ECHO The World Extraction will start as soon as you Tap "Allow" on your device.
 adb0 wait-for-device
 GOTO BACKUP
 
