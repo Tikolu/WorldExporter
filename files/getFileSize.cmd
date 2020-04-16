@@ -1,8 +1,8 @@
 @ECHO OFF
 
-:: Minecraft PE Internal World Exporter (file size checker)
+:: Minecraft PE World Exporter (file size checker)
 ::
-:: Created by Tikolu - http://tikolu.net16.net
+:: Created by Tikolu - https://tikolu.net
 :: Report issues to tikolu43@gmail.com
 
 IF [%1]==[] (
