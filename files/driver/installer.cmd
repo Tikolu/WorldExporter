@@ -1,8 +1,8 @@
 @ECHO OFF
 
-:: Minecraft PE Internal World Exporter (driver installer)
+:: Minecraft PE World Exporter (driver installer)
 ::
-:: Created by Tikolu - http://tikolu.net16.net
+:: Created by Tikolu - http://tikolu.net
 :: Report issues to tikolu43@gmail.com
 
 IF "%1"=="install" GOTO ARCH
