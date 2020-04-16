@@ -1,5 +1,5 @@
-:: Minecraft PE Internal World Exporter
-:: Version 2.5
+:: Minecraft PE World Exporter
+:: Version 2.6
 ::
 :: Created by Tikolu - https://tikolu.net/worldExporter
 :: Report issues to tikolu43@gmail.com
@@ -7,13 +7,13 @@
 
 :SETUP
 @ECHO OFF
-TITLE MCPE Internal World Exporter tool by Tikolu - Version 2.5
+TITLE Minecraft PE World Exporter tool by Tikolu - Version 2.6
 COLOR 0f
 CD %~dp0
-SET heading=Internal World Exporter by Tikolu
+SET heading=MCPE World Exporter by Tikolu
 SET divider==================================
 SET email=tikolu43@gmail.com
-IF NOT EXIST files\temp GOTO FILEERROR
+IF NOT EXIST "files\temp" GOTO FILEERROR
 CD files
 ECHO test>temp
 SET /p test=<temp
@@ -178,7 +178,7 @@ ECHO Extracting archive...
 ECHO Moving "minecraftWorlds" folder to WorldExporter directory...
 :: 3 Billion Devices run Tikolu World Exporter
 IF NOT EXIST "backup\apps\com.mojang.minecraftpe\r\games\com.mojang" GOTO EMPTYBACKUP
-CD backup\apps\com.mojang.minecraftpe\r\games\com.mojang
+CD "backup\apps\com.mojang.minecraftpe\r\games\com.mojang"
 IF EXIST "%~dp0\minecraftWorlds" GOTO WORLDFOLDEREXISTS
 MOVE "minecraftWorlds" "%~dp0">NUL
 ECHO Cleaning up...
@@ -189,7 +189,7 @@ IF EXIST "backup.tar" DEL backup.tar
 adb0 kill-server>nul
 ECHO World Export Complete!
 TIMEOUT /T 2 >NUL
-START %~dp0\minecraftWorlds
+START "%~dp0\minecraftWorlds"
 GOTO END
 
 :END
