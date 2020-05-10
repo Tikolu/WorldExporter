@@ -1,0 +1,2 @@
+* linguist-vendored
+*.cmd linguist-vendored=false
