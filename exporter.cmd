@@ -1,5 +1,5 @@
 :: Minecraft PE World Exporter
-:: Version 2.6
+:: Version 2.7
 ::
 :: Created by Tikolu - https://tikolu.net/worldExporter
 :: Report issues to tikolu43@gmail.com
@@ -7,8 +7,8 @@
 
 :SETUP
 @ECHO OFF
-TITLE Minecraft PE World Exporter tool by Tikolu - Version 2.6
-COLOR 0f
+title Minecraft PE World Exporter tool by Tikolu - Version 2.7
+color 0f
 CD %~dp0
 SET heading=MCPE World Exporter by Tikolu
 SET divider==================================
@@ -16,10 +16,11 @@ SET email=tikolu43@gmail.com
 IF NOT EXIST "files\temp" GOTO FILEERROR
 CD files
 ECHO test>temp
-SET /p test=<temp
-IF NOT [%test%]==[test] GOTO FILEERROR
-WHERE java >nul 2>nul
-IF %errorlevel%==1 GOTO JAVANOTINSTALLED
+SET /p writetest=<temp
+IF NOT [%writetest%]==[test] GOTO FILEERROR
+java -jar abe.jar>temp 2>&1
+fc temp abe_info
+IF NOT [%errorlevel%]==[0] GOTO JAVANOTINSTALLED
 IF EXIST "..\minecraftWorlds" GOTO WORLDFOLDEREXISTS
 CLS
 ECHO Launching ADB...
@@ -32,7 +33,7 @@ GOTO INTRODUCTION
 
 :FILEERROR
 CLS
-ECHO An error was encountered when trying to access the files folder.
+ECHO An error was encountered when trying to access necessary files.
 ECHO Please make sure that the ZIP file is extracted before using World Exporter.
 ECHO If you need help, please contact %email%
 ECHO.
@@ -90,8 +91,8 @@ EXIT
 
 :INTRODUCTION
 CLS
-ECHO Welcome to Internal World Exporter
-ECHO ==================================
+ECHO Welcome to Minecraft World Exporter
+ECHO ===================================
 ECHO.
 ECHO You can use this tool to export worlds from Minecraft Pocket Edition if you have set
 ECHO your storage type to "Application" in the settings.
@@ -111,7 +112,7 @@ ECHO.
 ECHO An ADB driver is required to connect to the device. It will now get installed.
 ECHO.
 ECHO After pressing enter, a popup will appear. Do the following:
-ECHO 1. Click "Yes" on the orange popup.
+ECHO 1. Click "Yes" on the orange popup. (If you already have installed this driver, click "No")
 ECHO 2. Click "Next" in the driver installation window.
 ECHO 3. Wait for the driver to install. Click "Yes" on all popups.
 ECHO 4. After the driver is installed, click on "Finish" to close the window.
@@ -181,15 +182,15 @@ IF NOT EXIST "backup\apps\com.mojang.minecraftpe\r\games\com.mojang" GOTO EMPTYB
 CD "backup\apps\com.mojang.minecraftpe\r\games\com.mojang"
 IF EXIST "%~dp0\minecraftWorlds" GOTO WORLDFOLDEREXISTS
 MOVE "minecraftWorlds" "%~dp0">NUL
-ECHO Cleaning up...
+ECHO Cleaning up after extraction...
 CD "..\..\..\..\..\.."
 RMDIR backup /s /q
 IF EXIST "backup.ab" DEL backup.ab
 IF EXIST "backup.tar" DEL backup.tar
 adb0 kill-server>nul
 ECHO World Export Complete!
-TIMEOUT /T 2 >NUL
-START "%~dp0\minecraftWorlds"
+timeout /T 2 >NUL
+explorer "..\minecraftWorlds"
 GOTO END
 
 :END
@@ -209,7 +210,7 @@ ECHO However, you can support future development of WorldExporter
 ECHO by donating. Any amount will be greatly appreciated!
 ECHO.
 ECHO Information on how to donate, as well as credits, changelog,
-ECHO and other information can be found on my website:
+ECHO and other information can all be found on my website:
 ECHO https://tikolu.net/worldExporter
 ECHO.
 ECHO Press enter to exit.
