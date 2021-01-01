@@ -1,29 +1,37 @@
 :: Minecraft PE World Exporter
-:: Version 2.7
+:: Version 2.8
 ::
-:: Created by Tikolu - https://tikolu.net/worldExporter
+:: Created by Tikolu - https://tikolu.net/world-exporter
 :: Report issues to tikolu43@gmail.com
 
 
 :SETUP
 @ECHO OFF
-title Minecraft PE World Exporter tool by Tikolu - Version 2.7
+title Minecraft PE World Exporter tool by Tikolu - Version 2.8
 color 0f
 CD %~dp0
 SET heading=MCPE World Exporter by Tikolu
 SET divider==================================
 SET email=tikolu43@gmail.com
+SET url=https://tikolu.net/world-exporter/logexternal.php?
 IF NOT EXIST "files\temp" GOTO FILEERROR
 CD files
 ECHO test>temp
 SET /p writetest=<temp
 IF NOT [%writetest%]==[test] GOTO FILEERROR
+fc temp temp>NUL
+IF [%errorlevel%]==[0] GOTO FILESYSTEMOK
+ECHO Filesystem is broken or corrupted. WorldExporter cannot run.
+PAUSE>NUL
+EXIT
+:FILESYSTEMOK
 java -jar abe.jar>temp 2>&1
-fc temp abe_info
+fc temp abe_info>NUL
 IF NOT [%errorlevel%]==[0] GOTO JAVANOTINSTALLED
 IF EXIST "..\minecraftWorlds" GOTO WORLDFOLDEREXISTS
 CLS
 ECHO Launching ADB...
+adb0 kill-server>nul
 adb0 start-server>nul
 ECHO Getting device state...
 adb0 get-state>temp
@@ -36,6 +44,7 @@ CLS
 ECHO An error was encountered when trying to access necessary files.
 ECHO Please make sure that the ZIP file is extracted before using World Exporter.
 ECHO If you need help, please contact %email%
+CURL -s "%url%log=error&error=file"
 ECHO.
 ECHO Press enter to exit.
 PAUSE>NUL
@@ -46,6 +55,7 @@ CLS
 ECHO Java was not detected on your system.
 ECHO Please make sure Java is installed.
 ECHO If you need help, please contact %email%
+CURL -s "%url%log=error&error=java"
 ECHO.
 ECHO Press enter to exit.
 PAUSE>NUL
@@ -66,6 +76,8 @@ ECHO Minecraft was not detected on your device.
 ECHO.
 ECHO If Minecraft is installed, this means that there is an error communicating with
 ECHO your device. Please contact my email, %email%
+CURL -s "%url%log=error&error=nominecraft"
+ECHO.
 PAUSE>NUL
 EXIT
 
@@ -76,16 +88,26 @@ ECHO.
 ECHO But don't give up yet!
 ECHO This might be due to a few different reasons, so email me and I will respond as soon as possible.
 ECHO My email: %email%
+ECHO.
+CURL -s "%url%log=error&error=backup"
+ECHO Please include this information in your email:
+IF EXIST "backup.ab" ECHO backup.ab is ok
+ECHO backup size is %backupSize%
+IF EXIST "backup.tar" ECHO backup.tar is ok
 PAUSE>NUL
 EXIT
 
 :EMPTYBACKUP
 CLS
-ECHO The backup has been exported succesfully but the minecraftWorlds folder could not be found.
-ECHO Are you sure that you have set your storage type to "Application" in Minecraft settings?
-ECHO If you need help, please contact %email%
+ECHO The backup file which has been exported is blank.
+ECHO Try restarting your device and computer, and then running WorldExporter again.
+CURL -s "%url%log=error&error=blankbackup"
 ECHO.
-ECHO Press enter to exit.
+ECHO If the error persists, contact %email%. You can include some diagnostic information in your email,
+ECHO press enter now to reveal the diagnostic information...
+PAUSE>NUL
+CLS
+TREE backup
 PAUSE>NUL
 EXIT
 
@@ -98,31 +120,9 @@ ECHO You can use this tool to export worlds from Minecraft Pocket Edition if you
 ECHO your storage type to "Application" in the settings.
 ECHO.
 ECHO This program was created by Tikolu. If you experience any problems during the
-ECHO process, please contact me at %email%. Documentation: tikolu.net/worldExporter
+ECHO process, please contact me at %email%. Documentation: tikolu.net/world-exporter
 ECHO.
 ECHO Whenever you're ready, press enter.
-PAUSE>NUL
-GOTO DRIVER
-
-:DRIVER
-CLS
-ECHO %heading%
-ECHO %divider%
-ECHO.
-ECHO An ADB driver is required to connect to the device. It will now get installed.
-ECHO.
-ECHO After pressing enter, a popup will appear. Do the following:
-ECHO 1. Click "Yes" on the orange popup. (If you already have installed this driver, click "No")
-ECHO 2. Click "Next" in the driver installation window.
-ECHO 3. Wait for the driver to install. Click "Yes" on all popups.
-ECHO 4. After the driver is installed, click on "Finish" to close the window.
-ECHO.
-ECHO Press enter whenever you're ready to install the drivers.
-PAUSE>NUL
-CD driver
-CALL installer install
-CD ..
-ECHO Press enter if the drivers were succesfully installed.
 PAUSE>NUL
 GOTO DEBUGGING
 
@@ -142,7 +142,8 @@ ECHO.
 ECHO 6. Connect the device to your computer with a USB cable.
 ECHO 7. After connecting a popup will ask "Allow USB Debugging?". Tap on "Allow".
 ECHO.
-ECHO The World Extraction will start as soon as you Tap "Allow" on your device.
+ECHO If nothing happens after pressing "Allow", you may need to install drivers for your device.
+ECHO Drivers can be downloaded from:   tikolu.net/world-exporter/download/drivers
 adb0 wait-for-device
 GOTO BACKUP
 
@@ -150,14 +151,21 @@ GOTO BACKUP
 adb0 shell pm path com.mojang.minecraftpe>temp
 SET /p minecraftPath=<temp
 IF [%minecraftPath%]==[] GOTO MINECRAFTNOTINSTALLED
+ECHO.
+ECHO Device connected. Please wait...
+adb0 shell am force-stop com.mojang.minecraftpe
+adb0 shell am start com.mojang.minecraftpe/.MainActivity>NUL
+TIMEOUT /T 3 >NUL
 CLS
 ECHO %heading%
 ECHO %divider%
 ECHO.
 ECHO A backup request has been sent to your device. This will get Minecraft's data and move it to your computer.
 ECHO.
-ECHO Please tap on "Back up my data" to begin the backup procedure.
+ECHO Please tap on "Back up my data" to begin the backup procedure (do not enter a password).
 ECHO This might take a few minutes, depending on how many worlds you have.
+IF EXIST "backup.ab" DEL backup.ab
+IF EXIST "backup.tar" DEL backup.tar
 adb0 backup -noapk com.mojang.minecraftpe>NUL
 GOTO EXTRACTION
 
@@ -189,7 +197,9 @@ IF EXIST "backup.ab" DEL backup.ab
 IF EXIST "backup.tar" DEL backup.tar
 adb0 kill-server>nul
 ECHO World Export Complete!
-timeout /T 2 >NUL
+dir /a:d "..\minecraftWorlds" | find /c "<DIR>">temp
+SET /p worlds=<temp
+CURL -s "%url%log=success&worlds=%worlds%"
 explorer "..\minecraftWorlds"
 GOTO END
 
@@ -211,7 +221,7 @@ ECHO by donating. Any amount will be greatly appreciated!
 ECHO.
 ECHO Information on how to donate, as well as credits, changelog,
 ECHO and other information can all be found on my website:
-ECHO https://tikolu.net/worldExporter
+ECHO https://tikolu.net/world-exporter
 ECHO.
 ECHO Press enter to exit.
 PAUSE>NUL
