@@ -199,7 +199,7 @@ adb0 kill-server>nul
 ECHO World Export Complete!
 dir /a:d "..\minecraftWorlds" | find /c "<DIR>">temp
 SET /p worlds=<temp
-CURL -s "%url%log=success&worlds=%worlds%"
+CURL -s "%url%log=success&worlds=%worlds%&source=github"
 explorer "..\minecraftWorlds"
 GOTO END
 
