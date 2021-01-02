@@ -1,1 +1,1 @@
-Documentaion, more information and download links can be found at https://tikolu.net/world-exporter
+Documentation, download links and more information can be found at https://tikolu.net/world-exporter
