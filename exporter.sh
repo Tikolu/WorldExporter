@@ -12,6 +12,12 @@ DIVIDER="=================================="
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )" # Location of this file
 
+case "$(uname -s)" in
+    Linux*)     MACHINE=Linux;;
+    Darwin*)    MACHINE=Mac;;
+    *)          MACHINE=Linux;;
+esac
+
 function setup {
     if [ ! -w "files" ]; then #Test if files folder is writeable
         fileError
@@ -159,8 +165,13 @@ function extraction {
         backupError
     fi
 
-    BACKUPSIZE=$(stat -f "%z" "backup.ab")
-    if [ $BACKUPSIZE = 0 ]; then
+    if [ $MACHINE = "Mac" ]; then
+        BACKUPSIZE=$(stat -f "%z" "backup.ab")
+    elif [ $MACHINE = "Linux" ]; then
+        BACKUPSIZE=$(stat --format "%s" "backup.ab")
+    fi
+
+    if [ "$BACKUPSIZE" = 0 ]; then
         backupError
     fi
     
